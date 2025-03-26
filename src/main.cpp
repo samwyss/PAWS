@@ -2,7 +2,7 @@
 #include <chrono>
 #include <fmt/chrono.h>
 
-#include "utils.hpp"
+#include "utils.h"
 
 /*!
 * main driver function and build target

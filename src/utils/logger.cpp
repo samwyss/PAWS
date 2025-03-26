@@ -1,4 +1,4 @@
-#include "logger.hpp"
+#include "logger.h"
 
 Logger::Logger(const LoggerLevel level,
                const LoggerRanks ranks) : level_(level), ranks_(ranks) {
