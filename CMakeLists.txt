@@ -61,6 +61,8 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 
 add_library(libutils
         ${PROJECT_SOURCE_DIR}/src/utils/utils.hpp
+        ${PROJECT_SOURCE_DIR}/src/utils/logger.cpp
+        ${PROJECT_SOURCE_DIR}/src/utils/logger.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}
