@@ -1,7 +1,7 @@
-#include <mpi.h>
 #include <chrono>
 #include <fmt/chrono.h>
 
+#include "mpi_manager.h"
 #include "utils.h"
 
 /*!
@@ -14,16 +14,7 @@ int main(int argc, char **argv) {
   // PAWS start time
   const auto start_time = std::chrono::high_resolution_clock::now();
 
-  // initialize mpi environment
-  MPI_Init(&argc, &argv);
-
-  // get size of MPI_COMM_WORLD communicator
-  int world_size;
-  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-  // get rank of process inside MPI_COMM_WORLD communicator
-  int world_rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+  const auto mpi_manager = MPIManager(argc, argv);
 
   // start_time formatted as string for output file name
   std::string start_time_str;
@@ -32,7 +23,7 @@ int main(int argc, char **argv) {
   int start_time_str_size;
 
   // broadcast the start time to all ranks for use in naming the output file
-  if (0 == world_rank) {
+  if (0 == mpi_manager.rank) {
     // format start time as string
     start_time_str = fmt::format("{:%Y-%m-%d_%H:%M:%S}", start_time);
 
@@ -58,7 +49,7 @@ int main(int argc, char **argv) {
   }
 
   // initial diagnostics
-  if (0 == world_rank) {
+  if (0 == mpi_manager.rank) {
     info_msg(
         "PAWS started at: " + fmt::format("{:%Y-%m-%d %H:%M:%S}", start_time) +
         ".");
@@ -71,7 +62,7 @@ int main(int argc, char **argv) {
   const auto end_time = std::chrono::high_resolution_clock::now();
 
   // final diagnostic messages
-  if (world_rank == 0) {
+  if (mpi_manager.rank == 0) {
     const auto total_time = end_time - start_time;
     info_msg(
         "PAWS successfully completed at " + fmt::format(
@@ -79,9 +70,6 @@ int main(int argc, char **argv) {
     info_msg("Total Time: " + fmt::format("{:%H:%M:%S}.", total_time));
     info_msg("Destructing MPI environment and exiting.");
   }
-
-  // finalize mpi environment
-  MPI_Finalize();
 
   // return success
   return EXIT_SUCCESS;
