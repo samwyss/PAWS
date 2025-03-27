@@ -63,6 +63,8 @@ add_library(libutils
         ${PROJECT_SOURCE_DIR}/src/utils/utils.h
         ${PROJECT_SOURCE_DIR}/src/utils/logger.cpp
         ${PROJECT_SOURCE_DIR}/src/utils/logger.h
+        src/utils/mpi_manager.cpp
+        src/utils/mpi_manager.h
 )
 
 target_link_libraries(${PROJECT_NAME}
