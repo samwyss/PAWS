@@ -1,20 +1,17 @@
-#include <chrono>
-#include <fmt/chrono.h>
-
-#include "mpi_manager.h"
-#include "utils.h"
+#include "EnvironmentManager.h"
 
 /*!
 * main driver function and build target
 * @param argc command line argument count
 * @param argv command line argument vector
-* @return
+* @return return code
 */
 int main(int argc, char **argv) {
   // PAWS start time
   const auto start_time = std::chrono::high_resolution_clock::now();
 
-  const auto mpi_manager = MPIManager(argc, argv);
+  const auto manager = EnvironmentManager(argc, argv, LoggerLevel::debug,
+                                          LoggerRanks::all);
 
   // start_time formatted as string for output file name
   std::string start_time_str;
