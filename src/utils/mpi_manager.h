@@ -1,16 +1,29 @@
-//
-// Created by sam on 3/27/25.
-//
+#ifndef UTILS_MPIMANAGER_H
+#define UTILS_MPIMANAGER_H
 
-#ifndef MPI_MANAGER_H
-#define MPI_MANAGER_H
+#include <mpi.h>
 
+struct MPIManager {
+  /*!
+   * constructs MPIManager
+   * @param argc command line argument count
+   * @param argv command line argument vector
+   */
+  MPIManager(int &argc, char **argv);
 
+  /*!
+   * destructs MPIManager and finalizes MPI environment
+   */
+  ~MPIManager();
 
-class mpi_manager {
+  /// MPI communicator
+  MPI_Comm comm;
 
+  /// rank within MPI communicator
+  int rank = -1;
+
+  /// size of MPI communicator
+  int size = -1;
 };
 
-
-
-#endif //MPI_MANAGER_H
+#endif //UTILS_MPIMANAGER_H
