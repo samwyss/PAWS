@@ -1,11 +1,14 @@
 #ifndef UTILS_ENVIRONMENTMANAGER_H
 #define UTILS_ENVIRONMENTMANAGER_H
 
+#include <chrono>
 #include <fmt/core.h>
+#include <fmt/chrono.h>
 #include <fmt/color.h>
 #include <mpi.h>
 #include <string>
 #include <ranges>
+#include <vector>
 
 /*!
  * logger level enum according to the Syslog standard
@@ -123,7 +126,42 @@ private:
 
   /// ranks to log on
   const LoggerRanks log_ranks;
-};
 
+  /// stack of times
+  struct times {
+    /*!
+     *
+     * @param level
+     * @param ranks
+     * @param msg
+     */
+    void begin(LoggerLevel level, LoggerRanks ranks, const std::string &msg);
+
+    /*!
+     *
+     */
+    void end();
+
+    /*!
+     *
+     */
+    std::vector<std::chrono::time_point<std::chrono::system_clock>> starts;
+
+    /*!
+     *
+     */
+    std::vector<LoggerLevel> levels;
+
+    /*!
+     *
+     */
+    std::vector<LoggerRanks> ranks;
+
+    /*!
+     *
+     */
+    std::vector<std::string> msgs;
+  };
+};
 
 #endif //UTILS_ENVIRONMENTMANAGER_H
