@@ -5,6 +5,7 @@
 #include <fmt/color.h>
 #include <mpi.h>
 #include <string>
+#include <ranges>
 
 /*!
  * logger level enum according to the Syslog standard
@@ -32,17 +33,18 @@ class Logger {
 public:
   Logger(LoggerLevel level, LoggerRanks ranks);
   ~Logger();
-  void log(LoggerLevel level, LoggerRanks ranks, int rank,
+  void log(LoggerLevel level, LoggerRanks ranks, int world_size, int rank,
            const std::string &msg);
 
 private:
-  void emerg(int rank, const std::string &msg);
-  void alert(int rank, const std::string &msg);
-  void crit(int rank, const std::string &msg);
-  void err(int rank, const std::string &msg);
-  void warning(int rank, const std::string &msg);
-  void notice(int rank, const std::string &msg);
-  void info(int rank, const std::string &msg);
+  static void emerg(int rank, const std::string &msg);
+  static void alert(int rank, const std::string &msg);
+  static void crit(int rank, const std::string &msg);
+  static void err(int rank, const std::string &msg);
+  static void warning(int rank, const std::string &msg);
+  static void notice(int rank, const std::string &msg);
+  static void info(int rank, const std::string &msg);
+  static void debug(int rank, const std::string &msg);
   const LoggerLevel level_;
   const LoggerRanks ranks_;
 };
