@@ -6,8 +6,8 @@
 
 /*!
 * main driver function and build target
-* @param argc argument count
-* @param argv argument vector
+* @param argc command line argument count
+* @param argv command line argument vector
 * @return
 */
 int main(int argc, char **argv) {
