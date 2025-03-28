@@ -213,3 +213,21 @@ void EnvironmentManager::log_debug(const std::string &msg) {
   fmt::print(fg(fmt::color::purple), "[DEBUG]");
   fmt::print(": {}\n", msg);
 }
+
+void EnvironmentManager::times::begin(LoggerLevel level, LoggerRanks ranks,
+                                      const std::string &msg) {
+  time_starts.emplace_back(std::chrono::high_resolution_clock::now());
+  time_levels.emplace_back(level);
+  time_ranks.emplace_back(ranks);
+  time_msgs.emplace_back(msg);
+}
+
+void EnvironmentManager::times::end() {
+  const auto end_time = std::chrono::high_resolution_clock::now();
+  const auto start_time = time_starts.back();
+
+  time_starts.pop_back();
+  time_levels.pop_back();
+  time_ranks.pop_back();
+  time_msgs.pop_back();
+}

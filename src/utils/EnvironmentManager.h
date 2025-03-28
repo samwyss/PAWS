@@ -145,22 +145,22 @@ private:
     /*!
      *
      */
-    std::vector<std::chrono::time_point<std::chrono::system_clock>> starts;
+    std::vector<std::chrono::time_point<std::chrono::system_clock>> time_starts;
 
     /*!
      *
      */
-    std::vector<LoggerLevel> levels;
+    std::vector<LoggerLevel> time_levels;
 
     /*!
      *
      */
-    std::vector<LoggerRanks> ranks;
+    std::vector<LoggerRanks> time_ranks;
 
     /*!
      *
      */
-    std::vector<std::string> msgs;
+    std::vector<std::string> time_msgs;
   };
 };
 
