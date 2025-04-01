@@ -1,2 +1,3 @@
 # PAWS
-A Parallelized Amateur Weather System (PAWS)
+
+A Parallelized Amateur Weather (Modeling) System (PAWS)
