@@ -2,8 +2,8 @@
 
 EnvironmentManager::EnvironmentManager(int &argc, char **argv,
                                        const LoggerLevel level,
-                                       const LoggerRanks ranks) :
-  log_level(level), log_ranks(ranks) {
+                                       const LoggerRanks ranks) : level(level),
+  ranks(ranks) {
   // initialize MPI environment
   MPI_Init(&argc, &argv);
   comm = MPI_COMM_WORLD;
@@ -12,13 +12,21 @@ EnvironmentManager::EnvironmentManager(int &argc, char **argv,
 }
 
 EnvironmentManager::~EnvironmentManager() {
+  // end any remaining timers
+  if (!timers.empty()) {
+    log(LoggerLevel::warning,
+        "Timers are running at the time of environment destruction.");
+    for (auto timer : timers) {
+      timer_stop();
+    }
+  }
+
   // terminate MPI environment
   MPI_Finalize();
 }
 
-void EnvironmentManager::log(const LoggerLevel level, const LoggerRanks ranks,
-                             const std::string &msg) {
-  if (level <= log_level) {
+void EnvironmentManager::log(const LoggerLevel level, const std::string &msg) {
+  if (sufficient_rank() && sufficient_level(level)) {
     switch (level) {
     case LoggerLevel::emerg:
       switch (ranks) {
@@ -214,20 +222,41 @@ void EnvironmentManager::log_debug(const std::string &msg) {
   fmt::print(": {}\n", msg);
 }
 
-void EnvironmentManager::times::begin(LoggerLevel level, LoggerRanks ranks,
-                                      const std::string &msg) {
-  time_starts.emplace_back(std::chrono::high_resolution_clock::now());
-  time_levels.emplace_back(level);
-  time_ranks.emplace_back(ranks);
-  time_msgs.emplace_back(msg);
+bool EnvironmentManager::sufficient_level(const LoggerLevel level) const {
+  if (level <= this->level) {
+    return true;
+  }
+  return false;
 }
 
-void EnvironmentManager::times::end() {
-  const auto end_time = std::chrono::high_resolution_clock::now();
-  const auto start_time = time_starts.back();
+bool EnvironmentManager::sufficient_rank() const {
+  if (LoggerRanks::zero == ranks) {
+    return 0 == rank;
+  } else {
+    return true;
+  }
+}
 
-  time_starts.pop_back();
-  time_levels.pop_back();
-  time_ranks.pop_back();
-  time_msgs.pop_back();
+
+void EnvironmentManager::timer_start(LoggerLevel level,
+                                     const std::string &name) {
+  if (sufficient_rank() && sufficient_level(level)) {
+    timers.emplace_back(std::chrono::high_resolution_clock::now(), level, name);
+    log(level, "Timer: `" + name + "` started at: " + fmt::format(
+                   fmt::runtime("{:%Y-%m-%d %H:%M:%S}"), timers.back().start));
+  }
+}
+
+void EnvironmentManager::timer_stop() {
+  if (sufficient_rank() && !timers.empty()) {
+    const auto end = std::chrono::high_resolution_clock::now();
+    const auto timer = timers.back();
+    const auto duration = end - timer.start;
+    log(timer.level,
+        "Timer: `" + timer.name + "` stopped at: " + fmt::format(
+            fmt::runtime("{:%Y-%m-%d %H:%M:%S}"),
+            end) + " with duration: " + fmt::format(
+            fmt::runtime("{:%H:%M:%S}"), duration));
+    timers.pop_back();
+  }
 }
